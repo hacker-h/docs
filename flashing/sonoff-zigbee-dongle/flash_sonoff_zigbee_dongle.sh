@@ -1,17 +1,35 @@
 #!/bin/bash
 set -eu
 
-# Enable bootloader + flash firmware
+# Settings
+DEPENDENCIES_PATH="./.dependencies"
+TMP_DIR="/tmp"
+FIRMWARE_TYPE=${FIRMWARE_TYPE:-coordinator}
+FIRMWARE_VERSION=${FIRMWARE_VERSION:-master}
 
 # Enable the bootloader with a modified script
-python uartLog.py | tee /tmp/output.txt
-DEVICE_NAME=$(cat /tmp/output.txt | grep -Eo '/dev/[a-zA-Z0-9]+')
+python ${DEPENDENCIES_PATH}/uartLog.py | tee ${TMP_DIR}/output.txt
+DEVICE_NAME=$(cat ${TMP_DIR}/output.txt | grep -Eo '/dev/[a-zA-Z0-9]+')
+
+LATEST_FIRMWARE_RELEASE_TAG=`curl --silent "https://api.github.com/repos/Koenkk/Z-Stack-firmware/releases/latest" |\
+    grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'`
+echo $LATEST_FIRMWARE_RELEASE_TAG
+FIRMWARE_NAME=`curl -s \
+    https://github.com/Koenkk/Z-Stack-firmware/tree/${LATEST_FIRMWARE_RELEASE_TAG}/${FIRMWARE_TYPE}/Z-Stack_3.x.0/bin |\
+    grep CC2652P | grep launchpad | grep ${FIRMWARE_TYPE} | grep -Eo "[A-Za-z0-9_]+\.zip" | sort -u`
+echo $FIRMWARE_NAME
+
+# Cleanup
+rm -f ${TMP_DIR}/firmware.zip
+rm -f ${TMP_DIR}/*.hex
 
 # Download firmware
-wget https://github.com/Koenkk/Z-Stack-firmware/raw/master/coordinator/Z-Stack_3.x.0/bin/CC1352P2_CC2652P_launchpad_coordinator_20220219.zip -O /tmp/firmware.zip
-ls /tmp/*.hex > /dev/null && rm /tmp/*.hex
-unzip /tmp/firmware.zip -d /tmp/
-rm /tmp/firmware.zip
+wget -O ${TMP_DIR}/firmware.zip \
+    https://github.com/Koenkk/Z-Stack-firmware/raw/${FIRMWARE_VERSION}/${FIRMWARE_TYPE}/Z-Stack_3.x.0/bin/${FIRMWARE_NAME}
+unzip ${TMP_DIR}/firmware.zip -d ${TMP_DIR}/
 
-# Flash the dongle with new firmware
-python cc2538-bsl.py -p ${DEVICE_NAME} -evw /tmp/*.hex --bootloader-sonoff-usb
+# Flash the dongle with firmware
+python ${DEPENDENCIES_PATH}/cc2538-bsl.py -p ${DEVICE_NAME} -evw ${TMP_DIR}/*.hex --bootloader-sonoff-usb
+
+# Cleanup
+rm ${TMP_DIR}/firmware.zip

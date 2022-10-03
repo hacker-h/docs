@@ -11,6 +11,13 @@ Executing the `setup.sh` script will install all required scripts + a python env
 bash ./setup.sh
 ```
 
+# Source your python environment
+Ensure you have a working python environment
+```
+source ${HOME}/.venv/sonoff_zigbee_dongle/bin/activate
+python --version
+```
+
 # Bootloader Activation + Firmware Download + Flashing
 ```
 # Enable the bootloader with a slightly modified script for Sonoff Zigbee Dongle 3.0

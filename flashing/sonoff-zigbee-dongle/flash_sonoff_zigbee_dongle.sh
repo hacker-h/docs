@@ -11,11 +11,8 @@ FIRMWARE_VERSION=${FIRMWARE_VERSION:-master}
 python ${DEPENDENCIES_PATH}/uartLog.py | tee ${TMP_DIR}/output.txt
 DEVICE_NAME=$(cat ${TMP_DIR}/output.txt | grep -Eo '/dev/[a-zA-Z0-9]+')
 
-LATEST_FIRMWARE_RELEASE_TAG=`curl --silent "https://api.github.com/repos/Koenkk/Z-Stack-firmware/releases/latest" |\
-    grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'`
-echo $LATEST_FIRMWARE_RELEASE_TAG
 FIRMWARE_NAME=`curl -s \
-    https://github.com/Koenkk/Z-Stack-firmware/tree/${LATEST_FIRMWARE_RELEASE_TAG}/${FIRMWARE_TYPE}/Z-Stack_3.x.0/bin |\
+    https://github.com/Koenkk/Z-Stack-firmware/tree/${FIRMWARE_VERSION}/${FIRMWARE_TYPE}/Z-Stack_3.x.0/bin |\
     grep CC2652P | grep launchpad | grep ${FIRMWARE_TYPE} | grep -Eo "[A-Za-z0-9_]+\.zip" | sort -u`
 echo $FIRMWARE_NAME
 

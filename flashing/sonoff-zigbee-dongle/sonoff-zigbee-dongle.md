@@ -1,15 +1,17 @@
 # Sonoff Zigbee Dongle Flashing Z-Stack 3.X.0
 
-# Setup virtualenv
-Setup a python3 environment (e.g. with [virtualenv](https://virtualenv.pypa.io/en/stable/)) and source it.:
+# Requirements
+- unzip
+- wget
+- [virtualenv](https://virtualenv.pypa.io/en/stable/) (You can also use some other kind of python environment, but then you will have to adapt the `setup.sh` script accordingly.)
+
+# Install dependencies
+Executing the `setup.sh` script will install all required scripts + a python environment for you:
 ```
-virtualenv -p python3.9 ~/.venv/zigbee_sonoff_dongle
-source ~/.venv/zigbee_sonoff_dongle/bin/activate
-# install dependencies
-pip3 install pyserial intelhex gevent
+bash ./setup.sh
 ```
 
-# Enable bootloader + flash firmware
+# Bootloader Activation + Firmware Download + Flashing
 ```
 # Enable the bootloader with a slightly modified script for Sonoff Zigbee Dongle 3.0
 python uartLog.py | tee /tmp/output.txt

@@ -23,10 +23,11 @@ rm -f ${TMP_DIR}/*.hex
 # Download firmware
 wget -O ${TMP_DIR}/firmware.zip \
     https://github.com/Koenkk/Z-Stack-firmware/raw/${FIRMWARE_VERSION}/${FIRMWARE_TYPE}/Z-Stack_3.x.0/bin/${FIRMWARE_NAME}
-unzip ${TMP_DIR}/firmware.zip -d ${TMP_DIR}/
+unzip -o ${TMP_DIR}/firmware.zip -d ${TMP_DIR}/
 
 # Flash the dongle with firmware
 python ${DEPENDENCIES_PATH}/cc2538-bsl.py -p ${DEVICE_NAME} -evw ${TMP_DIR}/*.hex --bootloader-sonoff-usb
 
 # Cleanup
 rm ${TMP_DIR}/firmware.zip
+rm -f ${TMP_DIR}/*.hex

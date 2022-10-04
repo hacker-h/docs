@@ -1,40 +1,39 @@
 # Sonoff Zigbee Dongle Flashing Z-Stack 3.X.0
 
-# Requirements
+## Requirements
 - unzip
 - wget
 - [virtualenv](https://virtualenv.pypa.io/en/stable/) (You can also use some other kind of python environment, but then you will have to adapt the `setup.sh` script accordingly.)
 
-# Install dependencies
+## Install dependencies
 Executing the `setup.sh` script will install all required scripts + a python environment for you:
 ```
-bash ./setup.sh
+./setup.sh
 ```
 
-# Source your python environment
+## Source your python environment
 Ensure you have a working python environment
 ```
 source ${HOME}/.venv/sonoff_zigbee_dongle/bin/activate
 python --version
 ```
 
-# Bootloader Activation + Firmware Download + Flashing
-```
-# Enable the bootloader with a slightly modified script for Sonoff Zigbee Dongle 3.0
-python uartLog.py | tee /tmp/output.txt
-DEVICE_NAME=$(cat /tmp/output.txt | grep -Eo '/dev/[a-zA-Z0-9]+')
+## Usage
+Flashing should take 10-15 seconds, depending on your system and network connection.
 
-# Download firmware
-wget https://github.com/Koenkk/Z-Stack-firmware/raw/master/coordinator/Z-Stack_3.x.0/bin/CC1352P2_CC2652P_launchpad_coordinator_20220219.zip -O /tmp/firmware.zip
-ls /tmp/*.hex > /dev/null && rm /tmp/*.hex
-unzip /tmp/firmware.zip -d /tmp/
-rm /tmp/firmware.zip
+### Flash latest coordinator firmware
+`./flash_sonoff_zigbee_dongle.sh`
 
-# Flash the dongle with new firmware
-python cc2538-bsl.py -p ${DEVICE_NAME} -evw /tmp/*.hex --bootloader-sonoff-usb
-```
+### Flash specific coordinator firmware
+`FIRMWARE_VERSION="Z-Stack_Home_3.x.0_20211217" ./flash_sonoff_zigbee_dongle.sh`
 
-# Thanks to
+### Flash latest router firmware
+`FIRMWARE_TYPE=router ./flash_sonoff_zigbee_dongle.sh`
+
+### Flash specific router firmware
+`FIRMWARE_VERSION="3275288c3a9497b4073604156e887778485c1b34" FIRMWARE_TYPE=router ./flash_sonoff_zigbee_dongle.sh`
+
+## Thanks to
 
 Bootloader Activation Script:
 

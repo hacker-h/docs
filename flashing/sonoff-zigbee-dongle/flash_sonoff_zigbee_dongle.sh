@@ -11,10 +11,20 @@ FIRMWARE_VERSION=${FIRMWARE_VERSION:-master}
 python ${DEPENDENCIES_PATH}/uartLog.py | tee ${TMP_DIR}/output.txt
 DEVICE_NAME=$(cat ${TMP_DIR}/output.txt | grep -Eo '/dev/[a-zA-Z0-9]+')
 
-FIRMWARE_NAME=`curl -s \
-    https://github.com/Koenkk/Z-Stack-firmware/tree/${FIRMWARE_VERSION}/${FIRMWARE_TYPE}/Z-Stack_3.x.0/bin |\
-    grep CC2652P | grep launchpad | grep ${FIRMWARE_TYPE} | grep -Eo "[A-Za-z0-9_]+\.zip" | sort -u`
-echo $FIRMWARE_NAME
+# For Sonoff Zigbee 3.0 USB Dongle Plus (which uses CC2652P)
+# Updated to the latest 20240710 firmware
+if [ "$FIRMWARE_TYPE" == "coordinator" ]; then
+    FIRMWARE_NAME="CC1352P2_CC2652P_launchpad_coordinator_20240710.zip"
+elif [ "$FIRMWARE_TYPE" == "router" ]; then
+    # If you need router firmware, you might need to adjust this name
+    # based on what's available in the router directory
+    FIRMWARE_NAME="CC1352P2_CC2652P_launchpad_router_20221102.zip"
+else
+    echo "Unknown firmware type: $FIRMWARE_TYPE"
+    exit 1
+fi
+
+echo "Using firmware: $FIRMWARE_NAME"
 
 # Cleanup
 rm -f ${TMP_DIR}/firmware.zip
